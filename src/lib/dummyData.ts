@@ -1,0 +1,170 @@
+
+import { Component } from './types';
+
+export const components: Component[] = [
+  {
+    id: '1',
+    name: 'Hero Section',
+    description: 'A full-width hero section with title, subtitle, and CTA button',
+    category: 'layout',
+    thumbnail: '/placeholder.svg',
+    lastEdited: new Date('2025-03-30'),
+    properties: [
+      {
+        id: 'title',
+        name: 'Title',
+        type: 'string',
+        value: 'Welcome to SculptCanvas',
+      },
+      {
+        id: 'subtitle',
+        name: 'Subtitle',
+        type: 'string',
+        value: 'Design, build and manage dynamic UI components',
+      },
+      {
+        id: 'buttonText',
+        name: 'Button Text',
+        type: 'string',
+        value: 'Get Started',
+      },
+      {
+        id: 'backgroundColor',
+        name: 'Background Color',
+        type: 'color',
+        value: '#1e293b',
+      },
+      {
+        id: 'textColor',
+        name: 'Text Color',
+        type: 'color',
+        value: '#ffffff',
+      },
+    ],
+    code: '<div className="w-full py-16 px-4 flex flex-col items-center justify-center text-center" style={{backgroundColor: properties.backgroundColor, color: properties.textColor}}><h1 className="text-4xl font-bold mb-4">{properties.title}</h1><p className="text-xl mb-8">{properties.subtitle}</p><button className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-colors">{properties.buttonText}</button></div>',
+  },
+  {
+    id: '2',
+    name: 'Feature Card',
+    description: 'A card displaying a feature with icon, title and description',
+    category: 'display',
+    thumbnail: '/placeholder.svg',
+    lastEdited: new Date('2025-04-01'),
+    properties: [
+      {
+        id: 'title',
+        name: 'Title',
+        type: 'string',
+        value: 'Customizable Components',
+      },
+      {
+        id: 'description',
+        name: 'Description',
+        type: 'string',
+        value: 'Create and customize UI components with an intuitive interface',
+      },
+      {
+        id: 'iconType',
+        name: 'Icon Type',
+        type: 'select',
+        value: 'code',
+        options: ['code', 'layout', 'settings', 'users', 'database'],
+      },
+      {
+        id: 'accentColor',
+        name: 'Accent Color',
+        type: 'color',
+        value: '#3b82f6',
+      },
+    ],
+    code: '<div className="bg-white shadow-md rounded-lg p-6 border border-gray-200"><div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mb-4" style={{backgroundColor: `${properties.accentColor}20`}}><span className="text-2xl" style={{color: properties.accentColor}}>Icon</span></div><h3 className="text-xl font-semibold mb-2">{properties.title}</h3><p className="text-gray-600">{properties.description}</p></div>',
+  },
+  {
+    id: '3',
+    name: 'Contact Form',
+    description: 'A simple contact form with name, email and message fields',
+    category: 'input',
+    thumbnail: '/placeholder.svg',
+    lastEdited: new Date('2025-03-28'),
+    properties: [
+      {
+        id: 'title',
+        name: 'Form Title',
+        type: 'string',
+        value: 'Contact Us',
+      },
+      {
+        id: 'submitButtonText',
+        name: 'Submit Button Text',
+        type: 'string',
+        value: 'Send Message',
+      },
+      {
+        id: 'showNameField',
+        name: 'Show Name Field',
+        type: 'boolean',
+        value: true,
+      },
+      {
+        id: 'nameLabel',
+        name: 'Name Field Label',
+        type: 'string',
+        value: 'Your Name',
+      },
+      {
+        id: 'emailLabel',
+        name: 'Email Field Label',
+        type: 'string',
+        value: 'Your Email',
+      },
+      {
+        id: 'messageLabel',
+        name: 'Message Field Label',
+        type: 'string',
+        value: 'Your Message',
+      },
+    ],
+    code: '<div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md"><h2 className="text-2xl font-bold mb-4">{properties.title}</h2><form className="space-y-4">{properties.showNameField && <div><label className="block text-sm font-medium mb-1">{properties.nameLabel}</label><input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md" /></div>}<div><label className="block text-sm font-medium mb-1">{properties.emailLabel}</label><input type="email" className="w-full px-3 py-2 border border-gray-300 rounded-md" /></div><div><label className="block text-sm font-medium mb-1">{properties.messageLabel}</label><textarea className="w-full px-3 py-2 border border-gray-300 rounded-md h-32"></textarea></div><button type="submit" className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md transition-colors">{properties.submitButtonText}</button></form></div>',
+  },
+  {
+    id: '4',
+    name: 'Navigation Bar',
+    description: 'A responsive navigation bar with logo and menu items',
+    category: 'navigation',
+    thumbnail: '/placeholder.svg',
+    lastEdited: new Date('2025-04-02'),
+    properties: [
+      {
+        id: 'logo',
+        name: 'Logo Text',
+        type: 'string',
+        value: 'SculptCanvas',
+      },
+      {
+        id: 'menuItems',
+        name: 'Menu Items (comma separated)',
+        type: 'string',
+        value: 'Home, Features, Pricing, Contact',
+      },
+      {
+        id: 'backgroundColor',
+        name: 'Background Color',
+        type: 'color',
+        value: '#ffffff',
+      },
+      {
+        id: 'textColor',
+        name: 'Text Color',
+        type: 'color',
+        value: '#1e293b',
+      },
+      {
+        id: 'accentColor',
+        name: 'Accent Color',
+        type: 'color',
+        value: '#3b82f6',
+      },
+    ],
+    code: '<nav className="shadow-md w-full" style={{backgroundColor: properties.backgroundColor, color: properties.textColor}}><div className="container mx-auto px-4 py-3 flex justify-between items-center"><div className="font-bold text-xl" style={{color: properties.accentColor}}>{properties.logo}</div><div className="hidden md:flex space-x-6">{properties.menuItems.split(",").map((item, i) => <a key={i} href="#" className="hover:text-opacity-80 transition-colors" style={{color: properties.textColor}}>{item.trim()}</a>)}</div><div className="md:hidden">Menu</div></div></nav>',
+  },
+];
