@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -44,17 +43,15 @@ export default function CollectionPreview() {
       const adaptedFields = adaptFieldsForPreview(fields);
       setFieldDefinitions(adaptedFields);
       
-      // Initialize form data with default values
       const initialData = fields.reduce((acc: Record<string, any>, field: any) => {
-        acc[field.api_id || field.apiId] = field.default_value || '';
+        acc[field.api_id] = field.default_value || '';
         return acc;
       }, {});
       setFormData(initialData);
       
-      // Find the first "text" field to use as a title field for slug generation
       const firstTextField = fields.find((f: any) => f.type === 'text');
       if (firstTextField) {
-        setTitleField(firstTextField.api_id || firstTextField.apiId);
+        setTitleField(firstTextField.api_id);
       }
     }
   }, [fields]);
@@ -78,10 +75,10 @@ export default function CollectionPreview() {
   const renderField = (field: any) => {
     const commonProps = {
       key: field.id,
-      id: field.apiId,
+      id: field.api_id,
       label: field.name,
-      value: formData[field.apiId],
-      onChange: (value: any) => handleInputChange(field.apiId, value),
+      value: formData[field.api_id],
+      onChange: (value: any) => handleInputChange(field.api_id, value),
       required: field.required || false,
       helpText: field.helpText || null,
       className: "mb-5",
@@ -101,11 +98,11 @@ export default function CollectionPreview() {
       case 'textarea':
         return (
           <div className="mb-5">
-            <Label htmlFor={field.apiId}>{field.name}{field.required && <span className="text-red-500 ml-1">*</span>}</Label>
+            <Label htmlFor={field.api_id}>{field.name}{field.required && <span className="text-red-500 ml-1">*</span>}</Label>
             <Textarea
-              id={field.apiId}
-              value={formData[field.apiId] || ''}
-              onChange={(e) => handleInputChange(field.apiId, e.target.value)}
+              id={field.api_id}
+              value={formData[field.api_id] || ''}
+              onChange={(e) => handleInputChange(field.api_id, e.target.value)}
               placeholder={field.placeholder || `Enter ${field.name}`}
               required={field.required}
               className="mt-1"
@@ -136,22 +133,22 @@ export default function CollectionPreview() {
         return (
           <div key={field.id} className="flex items-center space-x-2 mb-5">
             <Switch
-              id={field.apiId}
-              checked={formData[field.apiId] || false}
-              onCheckedChange={(checked) => handleInputChange(field.apiId, checked)}
+              id={field.api_id}
+              checked={formData[field.api_id] || false}
+              onCheckedChange={(checked) => handleInputChange(field.api_id, checked)}
             />
-            <Label htmlFor={field.apiId}>{field.name}{field.required && <span className="text-red-500 ml-1">*</span>}</Label>
+            <Label htmlFor={field.api_id}>{field.name}{field.required && <span className="text-red-500 ml-1">*</span>}</Label>
           </div>
         );
       case 'select':
         return (
           <div className="mb-5">
-            <Label htmlFor={field.apiId}>{field.name}{field.required && <span className="text-red-500 ml-1">*</span>}</Label>
+            <Label htmlFor={field.api_id}>{field.name}{field.required && <span className="text-red-500 ml-1">*</span>}</Label>
             <Select 
-              onValueChange={(value) => handleInputChange(field.apiId, value)}
-              defaultValue={formData[field.apiId] || ''}
+              onValueChange={(value) => handleInputChange(field.api_id, value)}
+              defaultValue={formData[field.api_id] || ''}
             >
-              <SelectTrigger id={field.apiId} className="mt-1">
+              <SelectTrigger id={field.api_id} className="mt-1">
                 <SelectValue placeholder={`Select ${field.name}`} />
               </SelectTrigger>
               <SelectContent>
@@ -173,16 +170,16 @@ export default function CollectionPreview() {
           <SelectButtonField
             {...commonProps}
             options={field.options}
-            value={formData[field.apiId] || ''}
+            value={formData[field.api_id] || ''}
           />
         );
       case 'date':
         return (
           <DateCalendarField
             {...commonProps}
-            value={formData[field.apiId] || null}
+            value={formData[field.api_id] || null}
             onChange={(date: Date) => {
-              handleInputChange(field.apiId, date);
+              handleInputChange(field.api_id, date);
             }}
           />
         );
@@ -250,7 +247,7 @@ export default function CollectionPreview() {
         return (
           <TagsInputField
             {...commonProps}
-            value={formData[field.apiId] || []}
+            value={formData[field.api_id] || []}
             placeholder={field.placeholder || `Add tags...`}
             maxTags={field.maxTags || 10}
           />
