@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
-import { Paintbrush, Transparency } from 'lucide-react';
+import { Paintbrush, EyeOff } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 
 interface ColorPickerFieldProps {
@@ -139,7 +139,7 @@ export function ColorPickerField({
               {showAlpha && (
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2">
-                    <Transparency className="h-4 w-4" />
+                    <EyeOff className="h-4 w-4" />
                     Transparency
                   </Label>
                   <div 
