@@ -14,6 +14,10 @@ export default function CollectionPreview() {
     console.log('Redirecting to fields configuration page...');
   }, []);
 
+  const handleBackClick = () => {
+    navigate(`/collections/${collectionId}/fields`);
+  };
+
   return (
     <MainLayout>
       <div className="p-6 md:p-10">
@@ -26,7 +30,7 @@ export default function CollectionPreview() {
           
           <Button 
             className="bg-blue-600 hover:bg-blue-700"
-            onClick={() => navigate(`/collections/${collectionId}/fields`)}
+            onClick={handleBackClick}
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Go to Field Configuration
