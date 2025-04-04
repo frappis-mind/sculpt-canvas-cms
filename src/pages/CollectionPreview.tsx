@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -20,6 +21,14 @@ import { WysiwygEditorField } from '@/components/fields/inputs/WysiwygEditorFiel
 import { MarkdownEditorField } from '@/components/fields/inputs/MarkdownEditorField';
 import { TagsInputField } from '@/components/fields/inputs/TagsInputField';
 import { SlugInputField } from '@/components/fields/inputs/SlugInputField';
+import { ColorPickerField } from '@/components/fields/inputs/ColorPickerField';
+import { RadioCardsField } from '@/components/fields/inputs/RadioCardsField';
+import { CheckboxCardsField } from '@/components/fields/inputs/CheckboxCardsField';
+import { FileInputField } from '@/components/fields/inputs/FileInputField';
+import { MultiFileInputField } from '@/components/fields/inputs/MultiFileInputField';
+import { JSONEditorField } from '@/components/fields/inputs/JSONEditorField';
+import { RatingField } from '@/components/fields/inputs/RatingField';
+import { SliderField } from '@/components/fields/inputs/SliderField';
 import { useQuery } from '@tanstack/react-query';
 import { getFieldsForCollection } from '@/services/CollectionService';
 import { adaptFieldsForPreview } from '@/utils/fieldAdapters';
@@ -260,6 +269,81 @@ export default function CollectionPreview() {
             sourceValue={titleField ? formData[titleField] : ''}
             prefix={field.prefix || ''}
             suffix={field.suffix || ''}
+          />
+        );
+      case 'color':
+      case 'colorpicker':
+        return (
+          <ColorPickerField
+            {...commonProps}
+            placeholder={field.placeholder || `Select color`}
+            showAlpha={field.advanced?.showAlpha}
+          />
+        );
+      case 'radioCards':
+        return (
+          <RadioCardsField
+            {...commonProps}
+            options={field.options || []}
+          />
+        );
+      case 'checkboxCards':
+        return (
+          <CheckboxCardsField
+            {...commonProps}
+            value={formData[field.api_id] || []}
+            options={field.options || []}
+            maxSelections={field.maxSelections}
+          />
+        );
+      case 'file':
+        return (
+          <FileInputField
+            {...commonProps}
+            value={formData[field.api_id] || null}
+            accept={field.accept}
+            maxSize={field.maxSize || 10}
+            showPreview={field.showPreview !== false}
+          />
+        );
+      case 'files':
+        return (
+          <MultiFileInputField
+            {...commonProps}
+            value={formData[field.api_id] || []}
+            accept={field.accept}
+            maxSize={field.maxSize || 10}
+            maxFiles={field.maxFiles || 5}
+            showPreviews={field.showPreviews !== false}
+          />
+        );
+      case 'json':
+        return (
+          <JSONEditorField
+            {...commonProps}
+            value={formData[field.api_id] || {}}
+            rows={field.rows || 10}
+          />
+        );
+      case 'rating':
+        return (
+          <RatingField
+            {...commonProps}
+            value={formData[field.api_id] || 0}
+            maxRating={field.maxRating || 5}
+            allowHalf={field.allowHalf}
+            size={field.size || 'md'}
+          />
+        );
+      case 'slider':
+        return (
+          <SliderField
+            {...commonProps}
+            value={formData[field.api_id] || 0}
+            min={field.min || 0}
+            max={field.max || 100}
+            step={field.step || 1}
+            showInput={field.showInput !== false}
           />
         );
       default:
