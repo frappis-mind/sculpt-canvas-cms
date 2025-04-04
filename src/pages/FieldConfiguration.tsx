@@ -1,10 +1,9 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, ArrowLeft, Save, Eye, Trash2, FileType } from 'lucide-react';
+import { Plus, ArrowLeft, Save, Eye, Trash2, FileType, X } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FieldTypeSelector } from '@/components/fields/FieldTypeSelector';
 import { FieldConfigPanel } from '@/components/fields/FieldConfigPanel';
@@ -16,6 +15,9 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getFieldsForCollection, createField, deleteField } from '@/services/CollectionService';
 import { ComponentSelector } from '@/components/components/ComponentSelector';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { CollectionPreviewForm } from '@/components/collection-preview/CollectionPreviewForm';
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/components/ui/alert-dialog';
+import JSONEditorField from '@/components/fields/inputs/JSONEditorField';
 
 const fieldTypes = {
   'Text & Numbers': [
@@ -108,8 +110,10 @@ export default function FieldConfiguration() {
   const [activeTab, setActiveTab] = useState('fields');
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [advancedSettings, setAdvancedSettings] = useState<any>({});
-  const [previewMode, setPreviewMode] = useState(false);
+  const [previewDialogOpen, setPreviewDialogOpen] = useState(false);
   const [componentSelectorOpen, setComponentSelectorOpen] = useState(false);
+  const [jsonPreviewOpen, setJsonPreviewOpen] = useState(false);
+  const [previewData, setPreviewData] = useState<Record<string, any>>({});
   
   useEffect(() => {
     if (!collectionId) {
@@ -209,14 +213,15 @@ export default function FieldConfiguration() {
   };
 
   const handlePreview = () => {
-    setPreviewMode(true);
-    
-    const previewUrl = `/collections/${collectionId}/preview`;
-    window.open(previewUrl, '_blank', 'noopener,noreferrer');
-    
+    setPreviewDialogOpen(true);
+  };
+
+  const handlePreviewSave = (formData: Record<string, any>) => {
+    setPreviewData(formData);
+    setJsonPreviewOpen(true);
     toast({
-      title: "Preview mode",
-      description: "Previewing your collection in a new tab",
+      title: "Preview data saved",
+      description: "Your content has been captured for preview.",
     });
   };
 
@@ -460,6 +465,71 @@ export default function FieldConfiguration() {
             />
           </DialogContent>
         </Dialog>
+
+        <Dialog open={previewDialogOpen} onOpenChange={setPreviewDialogOpen}>
+          <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <div className="flex justify-between items-center">
+                <DialogTitle className="text-2xl font-bold">Collection Preview</DialogTitle>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={() => setPreviewDialogOpen(false)}
+                  className="h-8 w-8"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+              <DialogDescription>
+                Fill in the fields to preview how the content will look
+              </DialogDescription>
+            </DialogHeader>
+            
+            <CollectionPreviewForm 
+              collectionId={collectionId || ''} 
+              fields={fields} 
+              isLoading={isLoading} 
+              error={error}
+              onPreviewSave={handlePreviewSave}
+            />
+          </DialogContent>
+        </Dialog>
+
+        <AlertDialog open={jsonPreviewOpen} onOpenChange={setJsonPreviewOpen}>
+          <AlertDialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
+            <AlertDialogHeader>
+              <AlertDialogTitle>Preview Data JSON</AlertDialogTitle>
+              <AlertDialogDescription>
+                This is how your data will be structured in the database
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+
+            <div className="py-4">
+              <JSONEditorField
+                id="jsonPreview"
+                value={previewData}
+                onChange={() => {}}
+                rows={15}
+                helpText="This is a read-only preview of your data structure"
+              />
+            </div>
+
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setJsonPreviewOpen(false)}>Close</AlertDialogCancel>
+              <AlertDialogAction 
+                onClick={() => {
+                  navigator.clipboard.writeText(JSON.stringify(previewData, null, 2));
+                  toast({
+                    title: "Copied to clipboard",
+                    description: "JSON data has been copied to your clipboard",
+                  });
+                }}
+              >
+                Copy JSON
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </MainLayout>
   );

@@ -1,42 +1,37 @@
 
-import React from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
-import { SaveIcon } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
-import { getFieldsForCollection } from '@/services/CollectionService';
-import { CollectionPreviewForm } from '@/components/collection-preview/CollectionPreviewForm';
+import { ArrowLeft } from 'lucide-react';
 
 export default function CollectionPreview() {
   const { collectionId } = useParams<{ collectionId: string }>();
+  const navigate = useNavigate();
 
-  const { data: fields = [], isLoading, error } = useQuery({
-    queryKey: ['fields', collectionId],
-    queryFn: () => getFieldsForCollection(collectionId!),
-    enabled: !!collectionId
-  });
+  useEffect(() => {
+    // Show a message that we're redirecting
+    console.log('Redirecting to fields configuration page...');
+  }, []);
 
   return (
     <MainLayout>
       <div className="p-6 md:p-10">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold">Collection Preview</h1>
+        <div className="flex flex-col items-center justify-center max-w-md mx-auto py-12">
+          <h1 className="text-2xl font-bold mb-4">Collection Preview</h1>
+          <p className="text-gray-500 text-center mb-6">
+            Collection preview is now integrated directly in the field configuration page.
+            You can access it by clicking the "Preview" button.
+          </p>
+          
           <Button 
             className="bg-blue-600 hover:bg-blue-700"
-            onClick={() => document.querySelector('form')?.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }))}
+            onClick={() => navigate(`/collections/${collectionId}/fields`)}
           >
-            <SaveIcon className="mr-2 h-4 w-4" />
-            Save Content
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Go to Field Configuration
           </Button>
         </div>
-        
-        <CollectionPreviewForm 
-          collectionId={collectionId || ''} 
-          fields={fields} 
-          isLoading={isLoading} 
-          error={error}
-        />
       </div>
     </MainLayout>
   );
