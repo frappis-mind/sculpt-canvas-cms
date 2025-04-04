@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
@@ -21,6 +22,16 @@ import { FieldAdvancedTab } from './FieldAdvancedTab';
 import { FieldAppearancePanel } from './appearance/FieldAppearancePanel';
 import { InputTextField } from './inputs/InputTextField';
 import { NumberInputField } from './inputs/NumberInputField';
+import { PasswordInputField } from './inputs/PasswordInputField';
+import { MaskInputField } from './inputs/MaskInputField';
+import { OTPInputField } from './inputs/OTPInputField';
+import { AutocompleteInputField } from './inputs/AutocompleteInputField';
+import { BlockEditorField } from './inputs/BlockEditorField';
+import { WysiwygEditorField } from './inputs/WysiwygEditorField';
+import { MarkdownEditorField } from './inputs/MarkdownEditorField';
+import { TagsInputField } from './inputs/TagsInputField';
+import { SlugInputField } from './inputs/SlugInputField';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface AppearanceSettings {
   floatLabel?: boolean;
@@ -39,6 +50,7 @@ interface AdvancedSettings {
   suffix?: string;
   currency?: string;
   locale?: string;
+  mask?: string;
   customData?: Record<string, any>;
 }
 
@@ -71,6 +83,44 @@ const getFieldSchema = (fieldType: string | null) => {
         defaultValue: z.number().optional(),
         min: z.number().optional(),
         max: z.number().optional(),
+      });
+    case 'password':
+      return z.object({
+        ...baseSchema,
+        showToggle: z.boolean().optional().default(true),
+      });
+    case 'mask':
+      return z.object({
+        ...baseSchema,
+        mask: z.string().optional(),
+      });
+    case 'otp':
+      return z.object({
+        ...baseSchema,
+        length: z.number().min(4).max(12).optional().default(6),
+      });
+    case 'tags':
+      return z.object({
+        ...baseSchema,
+        maxTags: z.number().optional().default(10),
+      });
+    case 'slug':
+      return z.object({
+        ...baseSchema,
+        prefix: z.string().optional(),
+        suffix: z.string().optional(),
+      });
+    case 'markdown':
+    case 'textarea':
+      return z.object({
+        ...baseSchema,
+        rows: z.number().optional().default(8),
+      });
+    case 'blockeditor':
+    case 'wysiwyg':
+      return z.object({
+        ...baseSchema,
+        minHeight: z.string().optional().default('200px'),
       });
     default:
       return z.object(baseSchema);
@@ -151,6 +201,10 @@ export function FieldConfigPanel({
   };
 
   const renderFieldPreview = () => {
+    const fieldName = form.watch('name') || "Field Label";
+    const placeholder = form.watch('ui_options.placeholder') || "Enter value...";
+    const helpText = form.watch('helpText');
+
     switch (fieldType) {
       case 'text':
         return (
@@ -158,9 +212,9 @@ export function FieldConfigPanel({
             <h3 className="text-sm font-medium mb-2">Field Preview:</h3>
             <InputTextField
               id="preview-field"
-              label={form.watch('name') || "Field Label"}
-              placeholder={form.watch('ui_options.placeholder') || "Enter text..."}
-              helpText={form.watch('helpText')}
+              label={fieldName}
+              placeholder={placeholder}
+              helpText={helpText}
               keyFilter={form.watch('keyFilter') || "none"}
               floatLabel={appearanceSettings.floatLabel}
               filled={appearanceSettings.filled}
@@ -175,10 +229,10 @@ export function FieldConfigPanel({
               id="preview-number"
               value={0}
               onChange={() => {}}
-              label={form.watch('name') || "Number Field"}
+              label={fieldName}
               min={form.watch('min')}
               max={form.watch('max')}
-              placeholder={form.watch('ui_options.placeholder') || "Enter a number"}
+              placeholder={placeholder}
               floatLabel={appearanceSettings.floatLabel}
               filled={appearanceSettings.filled}
               showButtons={advancedSettings.showButtons}
@@ -187,6 +241,379 @@ export function FieldConfigPanel({
               suffix={advancedSettings.suffix}
             />
           </div>
+        );
+      case 'password':
+        return (
+          <div className="mt-4 p-4 border rounded-md">
+            <h3 className="text-sm font-medium mb-2">Field Preview:</h3>
+            <PasswordInputField
+              id="preview-password"
+              value=""
+              onChange={() => {}}
+              label={fieldName}
+              placeholder={placeholder}
+              floatLabel={appearanceSettings.floatLabel}
+              filled={appearanceSettings.filled}
+              helpText={helpText}
+            />
+          </div>
+        );
+      case 'mask':
+        return (
+          <div className="mt-4 p-4 border rounded-md">
+            <h3 className="text-sm font-medium mb-2">Field Preview:</h3>
+            <MaskInputField
+              id="preview-mask"
+              value=""
+              onChange={() => {}}
+              label={fieldName}
+              placeholder={placeholder}
+              mask={advancedSettings.mask || ''}
+              floatLabel={appearanceSettings.floatLabel}
+              filled={appearanceSettings.filled}
+              helpText={helpText}
+            />
+          </div>
+        );
+      case 'otp':
+        return (
+          <div className="mt-4 p-4 border rounded-md">
+            <h3 className="text-sm font-medium mb-2">Field Preview:</h3>
+            <OTPInputField
+              id="preview-otp"
+              value=""
+              onChange={() => {}}
+              label={fieldName}
+              length={form.watch('length') || 6}
+              helpText={helpText}
+            />
+          </div>
+        );
+      case 'autocomplete':
+        return (
+          <div className="mt-4 p-4 border rounded-md">
+            <h3 className="text-sm font-medium mb-2">Field Preview:</h3>
+            <AutocompleteInputField
+              id="preview-autocomplete"
+              value=""
+              onChange={() => {}}
+              label={fieldName}
+              placeholder={placeholder}
+              options={[
+                { label: 'Option 1', value: 'option1' },
+                { label: 'Option 2', value: 'option2' },
+                { label: 'Option 3', value: 'option3' }
+              ]}
+              floatLabel={appearanceSettings.floatLabel}
+              filled={appearanceSettings.filled}
+              helpText={helpText}
+            />
+          </div>
+        );
+      case 'blockeditor':
+        return (
+          <div className="mt-4 p-4 border rounded-md">
+            <h3 className="text-sm font-medium mb-2">Field Preview:</h3>
+            <BlockEditorField
+              id="preview-blockeditor"
+              value=""
+              onChange={() => {}}
+              label={fieldName}
+              placeholder={placeholder}
+              helpText={helpText}
+              minHeight="100px"
+            />
+          </div>
+        );
+      case 'wysiwyg':
+        return (
+          <div className="mt-4 p-4 border rounded-md">
+            <h3 className="text-sm font-medium mb-2">Field Preview:</h3>
+            <WysiwygEditorField
+              id="preview-wysiwyg"
+              value=""
+              onChange={() => {}}
+              label={fieldName}
+              placeholder={placeholder}
+              helpText={helpText}
+              minHeight="100px"
+            />
+          </div>
+        );
+      case 'markdown':
+        return (
+          <div className="mt-4 p-4 border rounded-md">
+            <h3 className="text-sm font-medium mb-2">Field Preview:</h3>
+            <MarkdownEditorField
+              id="preview-markdown"
+              value=""
+              onChange={() => {}}
+              label={fieldName}
+              placeholder={placeholder}
+              helpText={helpText}
+              rows={4}
+            />
+          </div>
+        );
+      case 'tags':
+        return (
+          <div className="mt-4 p-4 border rounded-md">
+            <h3 className="text-sm font-medium mb-2">Field Preview:</h3>
+            <TagsInputField
+              id="preview-tags"
+              value={[]}
+              onChange={() => {}}
+              label={fieldName}
+              placeholder={placeholder}
+              helpText={helpText}
+              maxTags={form.watch('maxTags') || 10}
+            />
+          </div>
+        );
+      case 'slug':
+        return (
+          <div className="mt-4 p-4 border rounded-md">
+            <h3 className="text-sm font-medium mb-2">Field Preview:</h3>
+            <SlugInputField
+              id="preview-slug"
+              value=""
+              onChange={() => {}}
+              label={fieldName}
+              placeholder={placeholder}
+              helpText={helpText}
+              prefix={form.watch('prefix') || ''}
+              suffix={form.watch('suffix') || ''}
+            />
+          </div>
+        );
+      case 'textarea':
+        return (
+          <div className="mt-4 p-4 border rounded-md">
+            <h3 className="text-sm font-medium mb-2">Field Preview:</h3>
+            <div className="space-y-2">
+              <Label htmlFor="preview-textarea">{fieldName}</Label>
+              <Textarea
+                id="preview-textarea"
+                placeholder={placeholder}
+                rows={form.watch('rows') || 5}
+              />
+              {helpText && (
+                <p className="text-muted-foreground text-xs">{helpText}</p>
+              )}
+            </div>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
+  // Render field-specific options based on field type
+  const renderFieldTypeSpecificOptions = () => {
+    switch (fieldType) {
+      case 'text':
+        return (
+          <FormField
+            control={form.control}
+            name="keyFilter"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Key Filter</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select key filter" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="none">None</SelectItem>
+                    <SelectItem value="letters">Letters only</SelectItem>
+                    <SelectItem value="numbers">Numbers only</SelectItem>
+                    <SelectItem value="alphanumeric">Alphanumeric</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormDescription>
+                  Restrict input to specific character types
+                </FormDescription>
+              </FormItem>
+            )}
+          />
+        );
+      case 'number':
+        return (
+          <>
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="min"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Minimum Value</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number"
+                        {...field}
+                        onChange={e => field.onChange(Number(e.target.value))}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="max"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Maximum Value</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number"
+                        {...field}
+                        onChange={e => field.onChange(Number(e.target.value))}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+          </>
+        );
+      case 'otp':
+        return (
+          <FormField
+            control={form.control}
+            name="length"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>OTP Length</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="number"
+                    min={4}
+                    max={12}
+                    {...field}
+                    onChange={e => field.onChange(Number(e.target.value))}
+                  />
+                </FormControl>
+                <FormDescription>
+                  Number of digits in the OTP input (4-12)
+                </FormDescription>
+              </FormItem>
+            )}
+          />
+        );
+      case 'tags':
+        return (
+          <FormField
+            control={form.control}
+            name="maxTags"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Maximum Tags</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="number"
+                    min={1}
+                    {...field}
+                    onChange={e => field.onChange(Number(e.target.value))}
+                  />
+                </FormControl>
+                <FormDescription>
+                  Maximum number of tags allowed
+                </FormDescription>
+              </FormItem>
+            )}
+          />
+        );
+      case 'slug':
+        return (
+          <div className="grid grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="prefix"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Prefix</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="e.g. /blog/"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Text to display before the slug
+                  </FormDescription>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="suffix"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Suffix</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="e.g. .html"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Text to display after the slug
+                  </FormDescription>
+                </FormItem>
+              )}
+            />
+          </div>
+        );
+      case 'markdown':
+      case 'textarea':
+        return (
+          <FormField
+            control={form.control}
+            name="rows"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Default Rows</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="number"
+                    min={3}
+                    {...field}
+                    onChange={e => field.onChange(Number(e.target.value))}
+                  />
+                </FormControl>
+                <FormDescription>
+                  Initial height of the text area
+                </FormDescription>
+              </FormItem>
+            )}
+          />
+        );
+      case 'blockeditor':
+      case 'wysiwyg':
+        return (
+          <FormField
+            control={form.control}
+            name="minHeight"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Minimum Height</FormLabel>
+                <FormControl>
+                  <Input 
+                    placeholder="e.g. 200px"
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription>
+                  Minimum height of the editor (CSS value)
+                </FormDescription>
+              </FormItem>
+            )}
+          />
         );
       default:
         return null;
@@ -269,6 +696,24 @@ export function FieldConfigPanel({
                   </FormItem>
                 )}
               />
+              
+              <FormField
+                control={form.control}
+                name="ui_options.placeholder"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Placeholder</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter placeholder text" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      Text displayed when the field is empty
+                    </FormDescription>
+                  </FormItem>
+                )}
+              />
+              
+              {renderFieldTypeSpecificOptions()}
               
               {renderFieldPreview()}
             </div>
